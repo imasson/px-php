@@ -73,9 +73,18 @@ abstract class Entity
      * @codeCoverageIgnore
      * @return mixed
      */
-    public static function save()
+    public function create()
     {
-        //return self::$_manager->execute(get_called_class(), '');
+        return self::$_manager->execute($this, 'post');
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return mixed
+     */
+    public function save()
+    {
+        return self::$_manager->execute($this, 'post');
     }
 
     /**
@@ -103,9 +112,12 @@ abstract class Entity
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray($attributes = null)
     {
-        return get_object_vars($this);
+        if (is_null($attributes)) {
+            return get_object_vars($this);
+        }
+        return array_intersect_key(get_object_vars($this), $attributes);
     }
 
     /**
@@ -187,8 +199,14 @@ abstract class Entity
         if (!is_object($value)) {
             switch ($type) {
                 case 'float':
+                    if (!is_numeric($value)) {
+                        break;
+                    }
                     return (float)$value;
                 case 'int':
+                    if (!is_numeric($value)) {
+                        break;
+                    }
                     return (int)$value;
                 case 'string':
                     return (string)$value;

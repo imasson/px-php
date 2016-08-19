@@ -2,12 +2,8 @@
 
 namespace MercadoPago;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
 
-/**
- * Manager Class Doc Comment
- *
- * @package MercadoPago
- */
 /**
  * Class Manager
  *
@@ -81,6 +77,12 @@ class Manager
 
         $configuration = $this->getEntityMetaData($className);
 
+        $ormFunction = end(debug_backtrace())['function'];
+        if (!isset($configuration->methods[$ormFunction])) {
+            throw new Exception('ORM method ' . $ormFunction . ' not available for entity:' . $className);
+        }
+
+
         $query = [];
         $params = [];
         $this->_setDefaultHeaders($query);
@@ -95,7 +97,46 @@ class Manager
             }
         }
 
-        return $this->_client->{$method}($configuration->methods['list']['resource'], $query);
+        $result = [];
+        $this->_attributesToJson($entity, $result, $configuration);
+        $query['json_data'] = json_encode($result);
+
+        $response = $this->_client->{$method}($configuration->methods[$ormFunction]['resource'], $query);
+
+        if ($response['code'] == "200" || $response['code'] == "201") {
+            $this->_fillFromResponse($entity, $response['body']);
+        }
+    }
+
+    /**
+     *
+     * @return mixed
+     */
+    protected function _fillFromResponse($entity, $data)
+    {
+        foreach ($data as $key => $value) {
+            //if (is_array($value)) {
+            //    continue; // TODO build object nested structure
+            //}
+            $attribute = 'set' . str_replace('_', '', ucwords($key, '_'));
+            $entity->$attribute($value);
+        }
+    }
+
+    /**
+     *
+     * @return mixed
+     */
+    protected function _attributesToJson($entity, &$result, $configuration)
+    {
+        $attributes = array_filter($entity->toArray($configuration->attributes));
+        foreach ($attributes as $key => $value) {
+            if ($value instanceof Entity) {
+                $this->_attributesToJson($value, $result[$key], $configuration);
+            } else {
+                $result[$key] = $value;
+            }
+        }
     }
 
     /**
