@@ -42,6 +42,15 @@ class MercadoPagoSdk
     {
         return self::$_config;
     }
+    
+    /**
+     * @return Config
+     */
+    public static function restClient()
+    {
+        return self::$_restClient;
+    }
+    
 
 }
 
