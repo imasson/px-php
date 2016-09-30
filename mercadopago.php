@@ -1,6 +1,4 @@
 <?php
-//namespace MercadoPago;
-require_once "vendor/autoload.php";
 
 /**
  * MercadoPago Integration Library
@@ -521,24 +519,22 @@ class MPRestClient {
     public static function post($request) {
         $request['url_query'] = $request['params'];
         $request['json_data'] = $request['data'];
-        //$request["method"] = "POST";
 
         return \MercadoPago\MercadoPagoSdk::restClient()->post($request['uri'], $request);
-        //return self::exec($request);
     }
 
     public static function put($request) {
         $request['url_query'] = $request['params'];
         $request['json_data'] = $request['data'];
-        //$request["method"] = "PUT";
+
         return \MercadoPago\MercadoPagoSdk::restClient()->put($request['uri'], $request);
-        //return self::exec($request);
     }
 
     public static function delete($request) {
-        $request["method"] = "DELETE";
+        $request['url_query'] = $request['params'];
+        $request['json_data'] = $request['data'];
 
-        return self::exec($request);
+        return \MercadoPago\MercadoPagoSdk::restClient()->delete($request['uri'], $request);
     }
 }
 
