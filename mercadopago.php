@@ -185,11 +185,16 @@ class mercadopago {
      * @param array $preference
      * @return array(json)
      */
-    public function create_preference($preferenceData) {
-        $preference = new \MercadoPago\Preference($preferenceData);
-        $response = $preference->save();
-
-        return ['status' => $response['code'], 'response' => $response['body']];
+    public function create_preference($preference) {
+        $request = array(
+            "uri" => "/checkout/preferences",
+            "params" => array(
+                "access_token" => $this->get_access_token()
+            ),
+            "data" => $preference
+        );
+        $preference_result = MPRestClient::post($request);
+        return $preference_result;
     }
 
     /**
@@ -198,11 +203,16 @@ class mercadopago {
      * @param array $preference
      * @return array(json)
      */
-    public function update_preference($id, $preferenceData) {
-        $preference = new \MercadoPago\Preference($preferenceData);
-        $response = $preference->update(['id' => $id]);
-
-        return ['status' => $response['code'], 'response' => $response['body']];
+    public function update_preference($id, $preference) {
+        $request = array(
+            "uri" => "/checkout/preferences/{$id}",
+            "params" => array(
+                "access_token" => $this->get_access_token()
+            ),
+            "data" => $preference
+        );
+        $preference_result = MPRestClient::put($request);
+        return $preference_result;
     }
 
     /**
@@ -211,10 +221,14 @@ class mercadopago {
      * @return array(json)
      */
     public function get_preference($id) {
-        $preference = new \MercadoPago\Preference();
-        $response = $preference->read(['id' => $id]);
-
-        return ['status' => $response['code'], 'response' => $response['body']];
+        $request = array(
+            "uri" => "/checkout/preferences/{$id}",
+            "params" => array(
+                "access_token" => $this->get_access_token()
+            )
+        );
+        $preference_result = MPRestClient::get($request);
+        return $preference_result;
     }
 
     /**
