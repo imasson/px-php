@@ -7,6 +7,7 @@ namespace MercadoPago;
  */
 abstract class Entity
 {
+
     /**
      * @var
      */
@@ -193,7 +194,7 @@ abstract class Entity
      */
     protected function _propertyExists($property)
     {
-        return array_key_exists($property, get_object_vars($this));
+        return array_key_exists($property, get_class_vars(get_class($this)));
     }
     /**
      * @param $property
@@ -207,7 +208,7 @@ abstract class Entity
         if (!$definedType) {
             return true;
         }
-        if (is_object($type) && class_exists($definedType)) {
+        if (is_object($type) && class_exists($definedType, false)) {
             return ($type instanceof $definedType);
         }
         return gettype($type) == $definedType;
@@ -276,7 +277,7 @@ abstract class Entity
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $className = 'MercadoPago\\' . $this->_camelize($key);
-                if (class_exists($className)) {
+                if (class_exists($className, false)) {
                     $entity->_setValue($key, new $className, false);
                     $entity->_fillFromArray($this->{$key}, $value);
                 } else {

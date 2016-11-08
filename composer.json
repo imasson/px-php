@@ -24,7 +24,6 @@
     "doctrine/orm": "~2.3"
   },
   "autoload": {
-    "files": ["mercadopago.php"],
     "psr-4": {
       "MercadoPago\\": [
         "src/MercadoPago/",
