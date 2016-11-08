@@ -105,7 +105,8 @@ class Config
     public function set($key, $value)
     {
         parent::set($key, $value);
-        if ($this->get('CLIENT_ID') != "" && $this->get('CLIENT_SECRET') != "" && empty($this->get('ACCESS_TOKEN'))) {
+        $accessToken = $this->get('ACCESS_TOKEN');
+        if ($this->get('CLIENT_ID') != "" && $this->get('CLIENT_SECRET') != "" && empty($accessToken)) {
             $response = $this->getToken();
             if (isset($response['access_token']) && isset($response['refresh_token'])) {
                 parent::set('ACCESS_TOKEN', $response['access_token']);
