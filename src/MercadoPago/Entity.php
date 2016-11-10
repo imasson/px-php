@@ -51,7 +51,7 @@ abstract class Entity
         if ($response['code'] == "200" || $response['code'] == "201") {
             $this->_fillFromArray($this, $response['body']);
         }
-        return $this;
+        return $response;
     }
     /**
      * @return mixed
@@ -65,7 +65,7 @@ abstract class Entity
         if ($response['code'] == "200" || $response['code'] == "201") {
             $this->_fillFromArray($this, $response['body']['results'][0]);
         }
-        return $this;
+        return $response;
     }
     /**
      * @codeCoverageIgnore
@@ -95,7 +95,7 @@ abstract class Entity
         if ($response['code'] == "200" || $response['code'] == "201") {
             $this->_fillFromArray($this, $response['body']);
         }
-        return $this;
+        return $response;
     }
     /**
      * @codeCoverageIgnore
@@ -128,7 +128,7 @@ abstract class Entity
         if ($response['code'] == "200" || $response['code'] == "201") {
             $this->_fillFromArray($this, $response['body']);
         }
-        return $this;
+        return $response;
     }
     /**
      * @param $name
