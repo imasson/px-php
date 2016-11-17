@@ -23,10 +23,17 @@ class Manager
      * @var MetaDataReader
      */
     private $_metadataReader;
+
+    /**
+     * @var array
+     */
+    private $_customHeaders = [];
+
     /**
      * @var string
      */
     static $CIPHER = 'sha256';
+
     /**
      * Manager constructor.
      *
@@ -39,6 +46,7 @@ class Manager
         $this->_config = $config;
         $this->_metadataReader = new MetaDataReader();
     }
+
     protected function _getEntityConfiguration($entity)
     {
         $className = $this->_getEntityClassName($entity);
@@ -46,8 +54,10 @@ class Manager
             return $this->_entityConfiguration[$className];
         }
         $this->_entityConfiguration[$className] = $this->_metadataReader->getMetaData($entity);
+
         return $this->_entityConfiguration[$className];
     }
+
     /**
      * @param        $entity
      * @param string $method
@@ -64,8 +74,10 @@ class Manager
         $this->_setDefaultHeaders($configuration->query);
         $this->_setIdempotencyHeader($configuration->query, $configuration, $method);
         $this->setQueryParams($entity);
+
         return $this->_client->{$method}($configuration->url, $configuration->query);
     }
+
     public function validateAttribute($entity, $attribute, array $properties, $value = null)
     {
         $configuration = $this->_getEntityConfiguration($entity);
@@ -78,6 +90,7 @@ class Manager
             }
         }
     }
+
     protected function _isValidProperty($key, $property, $entity, $attribute, $value)
     {
         switch ($property) {
@@ -88,8 +101,10 @@ class Manager
             case 'readOnly':
                 return !$attribute['readOnly'];
         }
+
         return true;
     }
+
     /**
      * @param $entity
      * @param $ormMethod
@@ -115,6 +130,7 @@ class Manager
         }
         $this->_entityConfiguration[$className]->url = $url;
     }
+
     /**
      * @param $entity
      *
@@ -124,6 +140,7 @@ class Manager
     {
         return $this->_getEntityConfiguration($this->_getEntityClassName($entity));
     }
+
     /**
      * @param $entity
      *
@@ -136,8 +153,10 @@ class Manager
         } else {
             $className = $entity;
         }
+
         return $className;
     }
+
     /**
      * @param $entity
      */
@@ -148,6 +167,7 @@ class Manager
         $this->_attributesToJson($entity, $result, $this->_entityConfiguration[$className]);
         $this->_entityConfiguration[$className]->query['json_data'] = json_encode($result);
     }
+
     /**
      * @param $configuration
      */
@@ -168,6 +188,7 @@ class Manager
             }
         }
     }
+
     /**
      * @param $entity
      * @param $result
@@ -188,6 +209,7 @@ class Manager
             }
         }
     }
+
     /**
      * @param $entity
      * @param $property
@@ -197,8 +219,10 @@ class Manager
     public function getPropertyType($entity, $property)
     {
         $metaData = $this->_getEntityConfiguration($entity);
+
         return $metaData->attributes[$property]['type'];
     }
+
     /**
      * @param $entity
      *
@@ -207,8 +231,10 @@ class Manager
     public function getDynamicAttributeDenied($entity)
     {
         $metaData = $this->_getEntityConfiguration($entity);
+
         return isset($metaData->denyDynamicAttribute);
     }
+
     /**
      * @param $query
      */
@@ -217,7 +243,9 @@ class Manager
         $query['headers']['Accept'] = 'application/json';
         $query['headers']['Content-Type'] = 'application/json';
         $query['headers']['User-Agent'] = 'Mercado Pago Php SDK v' . Version::$_VERSION;
+        $query['headers'] = array_merge($query['headers'], $this->_customHeaders);
     }
+
     /**
      * @param        $query
      * @param        $configuration
@@ -236,6 +264,16 @@ class Manager
             $query['headers']['x-idempotency-key'] = hash(self::$CIPHER, $fields);
         }
     }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function addCustomHeader($key, $value)
+    {
+        $this->_customHeaders[$key] = $value;
+    }
+
     /**
      * @param $attributes
      *
@@ -249,6 +287,7 @@ class Manager
                 $result[] = $key;
             }
         }
+
         return implode('&', $result);
     }
 }

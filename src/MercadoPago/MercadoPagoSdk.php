@@ -42,15 +42,23 @@ class MercadoPagoSdk
     {
         return self::$_config;
     }
-    
+
     /**
-     * @return Config
+     * @return RestClient
      */
     public static function restClient()
     {
         return self::$_restClient;
     }
-    
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public static function addCustomHeader($key, $value)
+    {
+        self::$_manager->addCustomHeader($key, $value);
+    }
 
 }
 
