@@ -63,7 +63,10 @@ abstract class Entity
         $response = self::$_manager->execute($this, 'get');
 
         if ($response['code'] == "200" || $response['code'] == "201") {
-            $this->_fillFromArray($this, $response['body']['results'][0]);
+            $data = reset($response['body']['results']);
+            if ($data) {
+                $this->_fillFromArray($this, $data);
+            }
         }
         return $response;
     }
