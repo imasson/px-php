@@ -39,7 +39,7 @@ class RestClientTestextends extends \PHPUnit\Framework\TestCase
         $restClient->setHttpRequest($request);
         $response = $restClient->get("/dummy_get");
         
-        $this->assertEquals('APP_USR-6295877106812064-042916-5ab7e29152843f61b4c218a551227728__LC_LB__-202809963', $response['body']['access_token']);
+        $this->assertEquals('ACCESS_TOKEN', $response['body']['access_token']);
         $this->assertEquals('200', $response['code']);
     }
 
